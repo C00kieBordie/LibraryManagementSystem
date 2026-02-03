@@ -1,12 +1,39 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
+const search = ref('');
+const linksList: EssentialLinkProps[] = [
+  {
+    title: 'Main',
+    icon: 'public',
+    link: 'https://facebook.quasar.dev',
+  },
+  {
+    title: 'Settings',
+    icon: 'settings',
+    link: 'https://awesome.quasar.dev',
+  },
+  {
+    title: 'Contact Us',
+    icon: 'favorite',
+    link: 'https://awesome.quasar.dev',
+  },
+];
+
+const leftDrawerOpen = ref(false);
+
+function toggleLeftDrawer() {
+  leftDrawerOpen.value = !leftDrawerOpen.value;
+}
+</script>
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
-        <q-toolbar-title> Quasar App </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
+        <q-toolbar-title> Hidden Archive </q-toolbar-title>
+        <q-input filled rounded class="w-full max-w-sm" bg-color="white" v-model="search" label="Search for Book..."/>
       </q-toolbar>
     </q-header>
 
@@ -23,29 +50,3 @@
     </q-page-container>
   </q-layout>
 </template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
-
-const linksList: EssentialLinkProps[] = [
-  {
-    title: 'Main',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev',
-  },
-  {
-    title: 'Contact Us',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev',
-  },
-];
-
-const leftDrawerOpen = ref(false);
-
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value;
-}
-</script>
