@@ -10,6 +10,23 @@ const routes: RouteRecordRaw[] = [
         path: '', 
         component: () => import('pages/IndexPage.vue') 
       },
+      { 
+        path: 'login', 
+        component: () => import('src/pages/LogIn.vue') 
+      },
+      { 
+        path: 'profile', 
+        component: () => import('src/pages/UserProfile.vue') 
+      },
+      { 
+        path: 'settings', 
+        component: () => import('src/pages/UserPreferences.vue') 
+      },
+      { 
+        path: 'contact', 
+        component: () => import('src/pages/ContactUs.vue') 
+      },
+
     ]
   },
 

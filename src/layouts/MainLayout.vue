@@ -2,21 +2,27 @@
 import { ref } from 'vue';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
 const search = ref('');
+const userStatus = ref('Login');
 const linksList: EssentialLinkProps[] = [
+  {
+    title: userStatus.value,
+    icon: 'person',
+    link: userStatus.value === 'Login' ? '/login' : '/profile',
+  },
   {
     title: 'Main',
     icon: 'public',
-    link: 'https://facebook.quasar.dev',
+    link: '/',
   },
   {
     title: 'Settings',
     icon: 'settings',
-    link: 'https://awesome.quasar.dev',
+    link: '/settings',
   },
   {
     title: 'Contact Us',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev',
+    icon: 'phone',
+    link: '/contact',
   },
 ];
 
