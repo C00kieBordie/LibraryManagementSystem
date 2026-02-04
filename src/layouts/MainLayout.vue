@@ -21,9 +21,13 @@ const linksList: EssentialLinkProps[] = [
 ];
 
 const leftDrawerOpen = ref(false);
+const openSearch = ref(false);
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
+}
+function toggleSearch(){
+  openSearch.value = !openSearch.value;
 }
 </script>
 <template>
@@ -32,10 +36,18 @@ function toggleLeftDrawer() {
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
-        <q-toolbar-title> Hidden Archive </q-toolbar-title>
-        <q-input filled rounded class="w-full max-w-sm" bg-color="white" v-model="search" label="Search for Book...">
-          <q-icon name="search"/>
-        </q-input>
+        <q-toolbar-title :class="{ 'hidden sm:block': openSearch }"> Hidden Archive </q-toolbar-title>
+        <q-btn flat dense round icon="search" aria-label="Search" @click="toggleSearch"/>
+        <q-input
+          filled 
+          rounded 
+          class="w-full max-w-sm ml-auto" 
+          v-if="openSearch" 
+          bg-color="white" 
+          v-model="search" 
+          label="Search for Book..."
+          @blur="openSearch = false"
+        />
       </q-toolbar>
     </q-header>
 
@@ -50,5 +62,6 @@ function toggleLeftDrawer() {
     <q-page-container class="bg-[#629FAD]">
       <router-view />
     </q-page-container>
+    <footer></footer>
   </q-layout>
 </template>

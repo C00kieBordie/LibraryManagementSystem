@@ -10,12 +10,14 @@
     });
 </script>
 <template>
-    <q-card class="w-64 bg-white shadow-md hover:shadow-xl transition-shadow">
-        <q-img :src="coverUrl" height="200px" />
+    <div class="bg-[#C7BC96] rounded-lg p-1">
+        <q-card class="w-64 bg-[#E1D9BC] shadow-md hover:shadow-xl transition-shadow">
+            <q-img :src="coverUrl" height="200px" />
 
-        <q-card-section>
-            <div class="text-h6 text-[#30364F] font-bold truncate">{{ title }}</div>
-            <div class="text-subtitle2 text-grey-7">By {{ author }}</div>
-        </q-card-section>
-    </q-card>
+            <q-card-section>
+                <div class="text-h6 text-[#30364F] font-bold truncate">{{ title }}</div>
+                <div class="text-subtitle2 text-grey-7">By {{ author }}</div>
+            </q-card-section>
+        </q-card>
+    </div>
 </template>

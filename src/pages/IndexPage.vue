@@ -30,8 +30,16 @@ onMounted(async () => {
 </script>
 
 <template>
-  <q-page class="row items-center justify-evenly">
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+  <q-page class="row items-center justify-evenly pt-10">
+    <div class="
+      bg-[#E1D9BC]
+      flex
+      flex-row
+      gap-5
+      rounded-2xl
+      p-2
+      justify-center"
+    >
       <BookCard
         v-for="books in myBooks"
           :key="books.title"
