@@ -2,12 +2,12 @@
 import { ref } from 'vue';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
 const search = ref('');
-const userStatus = ref('notLogged');
+const userStatus = ref('Login');
 const linksList: EssentialLinkProps[] = [
   {
     title: userStatus.value,
     icon: 'person',
-    link: userStatus.value === 'notLogged' ? '/login' : '/profile',
+    link: userStatus.value === 'Login' ? '/login' : '/profile',
   },
   {
     title: 'Main',
