@@ -1,12 +1,17 @@
 <script setup lang="ts">
     import {computed} from 'vue';
-    const props = defineProps(['id', 'title', "author", 'price']);
+    const props = defineProps<{
+        'imgSrc': string,
+        'title': string,
+        'author': string,
+        'quantity': number,
+        'status': string,
+    }>();
     const coverUrl = computed(() => {
-  // If imgId is still null, show a placeholder
-    if (!props.id)
-        return 'https://placehold.co/400x600?text=No+Cover';
-    else
-        return `https://covers.openlibrary.org/b/id/${props.id}-L.jpg`;
+        if (!props.imgSrc)
+            return 'https://placehold.co/400x600?text=No+Cover';
+        else
+            return `https://covers.openlibrary.org/b/id/${props.imgSrc}-L.jpg`;
     });
 </script>
 <template>
@@ -21,3 +26,4 @@
         </q-card>
     </div>
 </template>
+
