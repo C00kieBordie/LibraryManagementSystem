@@ -53,7 +53,7 @@ const myBooks = ref<Book[]>([]);
           :imgSrc="book.imgSrc"
           :title="book.title"
           :author="book.author"
-          :quantity="book.qty"
+          :quantity="Number(book.qty)"
           :status="book.status"
       />
     </div>

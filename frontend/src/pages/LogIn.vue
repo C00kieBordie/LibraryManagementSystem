@@ -28,9 +28,10 @@
             if(data.ok){
                 alert('welcome!');
                 console.log('loged in')
+                console.log(data);
                 await router.push('/');
             }else{
-                alert('Wrong credentials.')
+                alert(data.message);
             }
         }
         catch (error) {
@@ -39,7 +40,29 @@
     };
 
     async function register(){
-        
+        if(newPassword.value != confirmNewPassword.value){
+            alert("Passwords do not match!");
+            return;
+        }
+
+        try{
+            const response = await fetch('http://localhost:3000/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    username: newUsername.value,
+                    email: newEmail.value, 
+                    password: newPassword.value })                    
+            });
+            const data = response;
+            if(data.ok){
+                alert('User Successfuly created!');
+                await router.push('/login');
+            }
+            
+        }catch(error){
+            console.error("Database connection failed", error);
+        }
     }
 </script>
 
