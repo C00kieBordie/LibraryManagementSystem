@@ -2,6 +2,9 @@ const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
 
+const jwt = require('jsonwebtoken');
+const SECRET_KEY = 'suPerRo1DEr';
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -31,7 +34,10 @@ app.post('/api/login', async (req, res) => {
 
     if(isMatch){
       console.log("Bcrypt match found!");
-      return res.status(200).json({ ok: true, user: { username: user.username } });
+      return res.status(200).json({ 
+        ok: true, 
+        token: user.status
+      });
     }else{
       console.log("User not found in DB");
       return res.status(401).json({ ok: false, message: 'Invalid email or password' });

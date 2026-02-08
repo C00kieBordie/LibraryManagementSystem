@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
+
 const search = ref('');
 const linksList: EssentialLinkProps[] = [
   {
@@ -40,7 +41,6 @@ function toggleSearch(){
     <q-header elevated>
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
-
         <q-toolbar-title :class="{ 'hidden sm:block': openSearch }"> Hidden Archive </q-toolbar-title>
         <q-btn flat dense round icon="search" aria-label="Search" @click="toggleSearch"/>
         <q-input

@@ -1,6 +1,10 @@
 <script setup lang="ts">
     import {ref} from 'vue';
     import {useRouter} from 'vue-router';
+    import { useQuasar } from 'quasar'
+
+    const $q = useQuasar();
+
     const router = useRouter();
     const email = ref('');
     const password = ref('');
@@ -26,9 +30,11 @@
 
             const data = await response.json();
             if(data.ok){
-                alert('welcome!');
-                console.log('loged in')
-                console.log(data);
+                $q.cookies.set('librarySession', data.token, {
+                    expires: '1d',
+                    path: '/',
+                });
+                $q.cookies.set('userProfile', data.user, { expires: '1d' });
                 await router.push('/');
             }else{
                 alert(data.message);
@@ -56,6 +62,7 @@
             });
             const data = response;
             if(data.ok){
+                tabName.value = 'login';
                 alert('User Successfuly created!');
                 await router.push('/login');
             }
