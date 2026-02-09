@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
+import { useAuthStore } from 'src/stores/auth-store';
+import {useQuasar} from 'quasar';
 
+const authStore = useAuthStore();
+
+const $q = useQuasar();
 const search = ref('');
 const linksList: EssentialLinkProps[] = [
   {
@@ -35,6 +40,17 @@ function toggleLeftDrawer() {
 function toggleSearch(){
   openSearch.value = !openSearch.value;
 }
+function logout(){
+  authStore.logout();
+  $q.cookies.remove('librarySession');
+  $q.cookies.remove('userProfile');
+
+  window.location.href = '/login';  
+  $q.notify({
+    message: 'Logged out successfully',
+    color: 'info'
+  });
+}
 </script>
 <template>
   <q-layout view="lHh Lpr lFf">
@@ -42,6 +58,7 @@ function toggleSearch(){
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
         <q-toolbar-title :class="{ 'hidden sm:block': openSearch }"> Hidden Archive </q-toolbar-title>
+        <q-btn flat round dense icon="logout" v-if="authStore.token" @click="logout" :class="{ 'hidden sm:block': openSearch }"/>
         <q-btn flat dense round icon="search" aria-label="Search" @click="toggleSearch"/>
         <q-input
           filled 

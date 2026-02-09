@@ -2,8 +2,10 @@
     import {ref} from 'vue';
     import {useRouter} from 'vue-router';
     import { useQuasar } from 'quasar'
+    import { useAuthStore } from 'src/stores/auth-store';
 
     const $q = useQuasar();
+    const authStore = useAuthStore();
 
     const router = useRouter();
     const email = ref('');
@@ -30,6 +32,7 @@
 
             const data = await response.json();
             if(data.ok){
+                authStore.login(data.user, data.token);
                 $q.cookies.set('librarySession', data.token, {
                     expires: '1d',
                     path: '/',
