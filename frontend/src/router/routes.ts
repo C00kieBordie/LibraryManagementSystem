@@ -3,11 +3,11 @@ import type { RouteRecordRaw } from 'vue-router';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('src/layouts/MainLayout.vue'),
     children: [
       { 
         path: '', 
-        component: () => import('pages/IndexPage.vue') 
+        component: () => import('src/pages/IndexPage.vue') 
       },
       { 
         path: 'login', 
@@ -19,11 +19,6 @@ const routes: RouteRecordRaw[] = [
         meta: {requiresAuth: true},
       },
       { 
-        path: 'settings', 
-        component: () => import('src/pages/UserPreferences.vue'),
-        meta: {requiresAuth: true},
-      },
-      { 
         path: 'contact', 
         component: () => import('src/pages/ContactUs.vue') 
       },
@@ -31,16 +26,22 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/admin',
-    component: () => import('layouts/AdminLayout.vue'),
+    component: () => import('src/layouts/AdminLayout.vue'),
+    meta: {requiresAuth: true, role: 'admin'},
     children: [
       { 
+        path: '', 
+        component: () => import('src/pages/IndexPage.vue') 
+      },
+      { 
         path: 'check_dashboard', 
-        component: () => import('pages/admin/DashboardLayout.vue') ,
+        component: () => import('src/pages/admin/DashboardLayout.vue') ,
       },
       { 
         path: 'manage_inventory', 
-        component: () => import('pages/admin/InventoryManagement.vue'),
+        component: () => import('src/pages/admin/InventoryManagement.vue'),
       },
+
     ]
   },
   {

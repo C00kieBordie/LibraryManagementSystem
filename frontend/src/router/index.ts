@@ -8,7 +8,6 @@ import {
 import routes from './routes';
 import { useAuthStore } from 'src/stores/auth-store';
 
-// 1. Tell TypeScript about your meta fields
 declare module 'vue-router' {
   interface RouteMeta {
     requiresAuth?: boolean;
@@ -29,24 +28,23 @@ export default defineRouter(function ({ store }) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
-  // 2. The Navigation Guard
   Router.beforeEach((to, from, next) => {
     const authStore = useAuthStore(store); 
-    const isLoggedIn = !!authStore.token;
-    const userRole = authStore.user?.role;
+    console.log('Guard sees Token:', authStore.token);
+  console.log('Guard sees Status:', authStore.user?.status);
+    const isLoggedIn = authStore.token;
+    const userRole = authStore.user?.status || authStore.token;
 
-    // Check if any part of the path (parent or child) requires auth
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
     const requiredRole = to.meta.role;
 
     if (requiresAuth && !isLoggedIn) {
-      // User is not logged in, redirect to login
       next({ path: '/login' });
     } else if (requiredRole === 'admin' && userRole !== 'admin') {
-      // User is logged in but not an admin
       next({ path: '/' }); 
+      console.log('forwarded to user mode');
+      console.log(userRole);
     } else {
-      // Everything is fine, proceed
       next();
     }
   });

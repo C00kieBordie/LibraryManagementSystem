@@ -38,7 +38,15 @@
                     path: '/',
                 });
                 $q.cookies.set('userProfile', data.user, { expires: '1d' });
-                await router.push('/');
+                const roleToLink = data.user?.status || data.token;
+                if (roleToLink === 'admin') {
+                    console.log('redirecting to admin page');
+                    await router.push('/admin/');
+                } else {
+                    
+                    console.log('redirecting to user page');
+                    await router.push('/');
+                }
             }else{
                 alert(data.message);
             }

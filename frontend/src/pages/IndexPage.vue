@@ -22,7 +22,6 @@ const myBooks = ref<Book[]>([]);
 
         const data = await response.json();
         if(data.ok){
-          console.log(data.books);
           myBooks.value = data.books.result;
         }else{
           alert('Failed to fetch books.')
