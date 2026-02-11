@@ -1,39 +1,37 @@
 <script setup lang="ts">
-import {ref, onMounted} from 'vue';
-import BookCard from 'components/BookCard.vue';
+  import {ref, onMounted} from 'vue';
+  import BookCard from 'components/BookCard.vue';
 
-interface Book {
-  ID: string;
-  imgSrc: string;
-  title: string;
-  author: string;
-  status: string;
-  qty: number;
-}
-const slide = ref('style');
-const myBooks = ref<Book[]>([]);
+  interface Book {
+    ID: string;
+    imgSrc: string;
+    title: string;
+    author: string;
+    status: string;
+    qty: number;
+  }
+  const slide = ref('style');
+  const myBooks = ref<Book[]>([]);
 
   const fetchBooks = async () => {
     try {
-        const response = await fetch('http://localhost:3000/api/getBooks', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-        });
-
-        const data = await response.json();
-        if(data.ok){
-          myBooks.value = data.books.result;
-        }else{
-          alert('Failed to fetch books.')
-        }
+      const response = await fetch('http://localhost:3000/api/getBooks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await response.json();
+      if(data.ok){
+        myBooks.value = data.books.result;
+      }else{
+        alert('Failed to fetch books.')
       }
-      catch (error) {
-        console.error("Database connection failed", error);
-      }
+    }catch (error) {
+      console.error("Database connection failed", error);
     }
-    onMounted(async () => {
-      await fetchBooks();
-    });
+  }
+  onMounted(async () => {
+    await fetchBooks();
+  });
 </script>
 
 <template>

@@ -105,7 +105,7 @@ app.post('/api/getBooks', async (req, res) => {
       res.status(200).json({ 
         ok: true,
         message: 'Books retrieved successfully!', 
-        books: { result: result.rows }
+        books: { result: result.rows },
       });
     }else {
       res.status(401).json({ ok: false, message: 'Invalid email or password' });
@@ -116,6 +116,125 @@ app.post('/api/getBooks', async (req, res) => {
   }
 });
 
+app.post('/api/addBook', async (req, res) => {
+  const {author, title, bookIdentifier, status, qty} = req.body;
+  console.log('started adding the book...')
+    let q = `SELECT * FROM public."Books"
+            WHERE "bookTitle" = $1 AND "authorID" = $2`;
+    let values = [title, author];
+    
+  try{
+    const resultChecking = await pool.query(q, values);
+    if(resultChecking.rows.length > 0){
+      res.status(400).json({
+        ok: false,
+        message: 'Book already exists...',
+      });
+      return;
+    }
+  }catch(err){
+    console.error(err.message);
+    res.status(500).json({ ok: false, message: err.message });
+  }
+  try {
+    q = `INSERT INTO public."Books" ("imageIdentifier", "bookTitle", "authorID", "status", "quantity")
+          VALUES($1, $2, $3, $4, $5)`;
+    values = [bookIdentifier, title, author, status, qty];
+    await pool.query(q, values);
 
+    res.status(201).json({
+      ok: true,
+      message: 'Book successfuly added!',
+    })
+  }catch(err){
+    console.error(err.message);
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+app.post('/api/addAuthor', async (req, res) => {
+  const {authorName} = req.body;
+  let q = `INSERT INTO public."Authors" ("authorName") VALUES ($1)`
+  let values = [authorName];
+
+  try{
+    const result = await pool.query(q, values);
+
+    res.status(201).json({
+      ok: true,
+      message: 'Author successfuly added!',
+    })
+  }catch(err){
+    console.error(err.message);
+    res.status(500).json({ ok: false, message: err.message });
+  }
+
+});
+
+app.post('/api/searchBook', async (req, res) => {
+  const {bookName} = req.body;
+  let q = `SELECT 
+                b."ID",
+                b."imageIdentifier" AS "imgSrc",
+                b."bookTitle" AS "title",
+                a."authorName" AS "author",
+                b."status",
+                b."quantity" AS "qty"
+              FROM
+                public."Books" b
+              INNER JOIN 
+                public."Authors" a ON b."authorID" = a."ID"
+              WHERE b."bookTitle" ILIKE $1;`;
+  let values = [`%${bookName}%`];
+
+  try{
+    const result = await pool.query(q, values);
+
+    res.status(200).json({
+      ok: true,
+      message: 'Books found', 
+      books: { result: result.rows },
+    })
+  }catch(err){
+    console.error(err.message);
+    res.status(500).json({ ok: false, message: err.message });
+  }
+
+});
+
+app.post('/api/deleteBook', async (req, res) => {
+  const {bookID} = req.body;
+  const q = `DELETE FROM public."Books" WHERE "ID" = $1`;
+  const values = [bookID];
+  try{
+    const result = await pool.query(q, values);
+
+    res.status(200).json({
+      ok: true,
+      message: 'Book successfuly deleted.',
+    })
+  }catch(err){
+    console.error(err.message);
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+app.post('/api/editBook', async (req, res) => {
+  const {bookID, title, authorID ,status, qty} = req.body;
+  const q = `UPDATE public."Books" SET "bookTitle" = $1, "authorID" = $2, "status" = $3, "quantity" = $4
+              WHERE "ID" = $5`;
+  const values = [title, authorID ,status, qty, bookID];
+  try{
+    const result = await pool.query(q, values);
+
+    res.status(200).json({
+      ok: true,
+      message: 'Book successfuly edited.',
+    })
+  }catch(err){
+    console.error(err.message);
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
 
 app.listen(3000, () => console.log('Backend running on port 3000'));
