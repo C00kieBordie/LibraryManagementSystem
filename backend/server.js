@@ -116,6 +116,24 @@ app.post('/api/getBooks', async (req, res) => {
   }
 });
 
+app.post('/api/getAuthors', async (req, res) => {
+  try {
+    const q = `SELECT * FROM public."Authors"`;
+    const result = await pool.query(q);
+    if(result.rows.length > 0){
+      const user = result.rows[0];
+      res.status(200).json({ 
+        ok: true,
+        message: 'Author info retrieved successfully!', 
+        books: { result: result.rows },
+      });
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
 app.post('/api/addBook', async (req, res) => {
   const {author, title, bookIdentifier, status, qty} = req.body;
   console.log('started adding the book...')
@@ -232,6 +250,37 @@ app.post('/api/editBook', async (req, res) => {
       message: 'Book successfuly edited.',
     })
   }catch(err){
+    console.error(err.message);
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+app.post('/api/searchBookByID', async (req, res) => {
+  const {authorID} = req.body;
+  try {
+    const q = `SELECT 
+                b."ID",
+                b."imageIdentifier" AS "imgSrc",
+                b."bookTitle" AS "title",
+                a."authorName" AS "author",
+                b."status",
+                b."quantity" AS "qty"
+              FROM
+                public."Books" b
+              INNER JOIN 
+                public."Authors" a ON b."authorID" = a."ID"
+              WHERE b."authorID" = $1;`;
+    const values = [authorID];
+    const result = await pool.query(q, values);
+    if(result.rows.length > 0){
+      const user = result.rows[0];
+      res.status(200).json({ 
+        ok: true,
+        message: 'Author work retrieved successfully!', 
+        books: { result: result.rows },
+      });
+    }
+  } catch (err) {
     console.error(err.message);
     res.status(500).json({ ok: false, message: err.message });
   }

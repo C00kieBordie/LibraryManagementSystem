@@ -3,42 +3,80 @@
   import type { QTableProps } from 'quasar';
 
   interface BookRow {
-  ID: number;
-  title: string;
-  author: string;
-  authorID?: number; 
-  status: string;
-  qty: number;
-  imgSrc?: string;
-}
+    ID: number;
+    title: string;
+    author: string;
+    authorID?: number; 
+    status: string;
+    qty: number;
+    imgSrc?: string;
+  }
+  interface AuthorRow {
+    ID: number;
+    authorName: string;
+  }
 
   const bookName = ref('');
   const authName = ref('');
-  const authID = ref();
+  const inputAuthID = ref();
   const status = ref('');
   const quantity = ref(0);
   const bookID = ref();
-  const rows = ref([]);
+
+  const bookRows = ref([]);
+  const authRows = ref([]);
   const loading = ref(false);
   const fetched = ref(false);
-function onRowClick(evt: Event, row: BookRow) {
+  const tabName = ref('books');
+function onBooksRowClick(evt: Event, row: BookRow) {
   bookID.value = row.ID;
   bookName.value = row.title;
   authName.value = row.author;
   
-  authID.value = row.authorID || row.ID; 
+  inputAuthID.value = row.authorID || row.ID; 
   
   status.value = row.status;
   quantity.value = row.qty;
   fetched.value = true;
 }
+async function onAuthorRowClick(evt: Event, row: AuthorRow) {
+    loading.value = true;
+    try{
+      const response = await fetch('http://localhost:3000/api/searchBookByID', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            authorID: row.ID,
+        })
+      });
+      const data = await response.json();
+      if(data.ok){
+        bookRows.value = data.books.result;
+        tabName.value = 'books';
+        alert(data.message);
+      }else{
+        alert('Author has no books.')
+      }
+    }catch(error){
+      console.error("Database connection failed", error);
+    }finally{
+      loading.value = false;
+    }
+}
+const options = [
+        'avaialable', 'out of stock', 'in progress'
+      ];
 
-  const columns: QTableProps['columns'] = [
+  const bookCol: QTableProps['columns'] = [
     { name: 'book_ID', label: 'ID', field: 'ID', align: 'left' },
     { name: 'book_name', label: 'Book Name', field: 'title', align: 'left' },
     { name: 'author', label: 'Author', field: 'author', align: 'left' },
     { name: 'status', label: 'Status', field: 'status', align: 'left' },
     { name: 'qty', label: 'Quantity', field: 'qty', align: 'left' },
+  ];
+  const authCol: QTableProps['columns'] = [
+    { name: 'auth_ID', label: 'Author ID', field: 'ID', align: 'left'},
+    { name: 'author', label: 'Author Name', field: 'authorName', align: 'left'},
   ];
 
   async function getIdentifier(){
@@ -57,7 +95,7 @@ function onRowClick(evt: Event, row: BookRow) {
   }
   }
 
-  async function fillTable(){
+  async function fillBooksTable(){
     loading.value = true;
     try {
         const response = await fetch('http://localhost:3000/api/getBooks', {
@@ -67,7 +105,29 @@ function onRowClick(evt: Event, row: BookRow) {
 
         const data = await response.json();
         if(data.ok){
-          rows.value = data.books.result;
+          bookRows.value = data.books.result;
+          console.log(data);
+        }else{
+          alert('Failed to fetch books.')
+        }
+      }
+    catch (error) {
+      console.error("Database connection failed", error);
+    }finally{
+      loading.value = false;
+    }
+  }
+  async function fillAuthorsTable(){
+    loading.value = true;
+    try {
+        const response = await fetch('http://localhost:3000/api/getAuthors', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        const data = await response.json();
+        if(data.ok){
+          authRows.value = data.books.result;
           console.log(data);
         }else{
           alert('Failed to fetch books.')
@@ -80,7 +140,7 @@ function onRowClick(evt: Event, row: BookRow) {
     }
   }
   async function addBook(){
-    if(authID.value < 1 || bookName.value === '' || status.value === '' || quantity.value < 0){
+    if(inputAuthID.value < 1 || bookName.value === '' || status.value === '' || quantity.value < 0){
       return;
     }
     try {
@@ -89,7 +149,7 @@ function onRowClick(evt: Event, row: BookRow) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-                    author: authID.value, 
+                    author: inputAuthID.value, 
                     title: bookName.value,
                     bookIdentifier: identifier,
                     status: status.value,
@@ -100,7 +160,7 @@ function onRowClick(evt: Event, row: BookRow) {
       const data = await response.json();
       if(data.ok){
         console.log(data.message);
-        await fillTable();
+        await fillBooksTable();
       }else{
         alert(data.message);
       }
@@ -143,7 +203,7 @@ function onRowClick(evt: Event, row: BookRow) {
       });
       const data = await response.json();
       if(data.ok){
-        rows.value = data.books.result;
+        bookRows.value = data.books.result;
         console.log(data);
       }else{
         alert('Failed to fetch books.')
@@ -166,7 +226,7 @@ function onRowClick(evt: Event, row: BookRow) {
       const data = await response.json();
       if(data.ok){
         console.log('Book Successfuly deleted!');
-        await fillTable();
+        await fillBooksTable();
       }else{
         alert('Failed to fetch books.')
       }
@@ -186,7 +246,7 @@ function onRowClick(evt: Event, row: BookRow) {
         body: JSON.stringify({
                     bookID: bookID.value,
                     title: bookName.value,
-                    authorID: authID.value,
+                    authorID: inputAuthID.value,
                     status: status.value,
                     qty: quantity.value,
         })
@@ -199,14 +259,13 @@ function onRowClick(evt: Event, row: BookRow) {
       console.error("Database connection failed", err);
     }finally{
       fetched.value = false;
-      await fillTable();
+      await fillBooksTable();
   }
   }
-  const options = [
-        'avaialable', 'out of stock', 'in progress'
-      ];
+  
   onMounted(async () => {
-      await fillTable();
+      await fillBooksTable();
+      await fillAuthorsTable();
   });
 </script>
 
@@ -222,7 +281,7 @@ function onRowClick(evt: Event, row: BookRow) {
           <div class="space-y-4">
             <q-input v-model="bookName" label="Book Name" stack-label outlined />
             <q-input v-model="authName" label="Author Name" stack-label outlined />
-            <q-input v-model.number="authID" label="Author ID" stack-label outlined />
+            <q-input v-model.number="inputAuthID" label="Author ID" stack-label outlined />
             
             <q-select 
               rounded 
@@ -235,7 +294,7 @@ function onRowClick(evt: Event, row: BookRow) {
             <q-input v-model.number="quantity" label="Quantity" stack-label outlined />
           </div>
           <q-btn color="primary" icon="person_add" label="Add author" @click="addAuth" class="mt-4 q-col-gutter-md" />
-          <q-btn color="primary" icon="view_list" label="Show all Books" @click="fillTable" class="mt-4 q-col-gutter-md" />
+          <q-btn color="primary" icon="view_list" label="Show all Books" @click="fillBooksTable" class="mt-4 q-col-gutter-md" />
 
           <div class="grid grid-cols-2 gap-4 mt-6">
             <q-btn color="primary" icon="search" label="Search for Book" @click="searchBook"/>
@@ -249,18 +308,42 @@ function onRowClick(evt: Event, row: BookRow) {
 
       <div class="col-7 flex flex-col">
         <q-card class="full-width grow p-2 shadow-lg bg-grey-1">
-          <div class="q-pa-md">
-            <q-table
-              class="my-sticky-header-table"
-              flat bordered
-              title="Library Records"
-              :rows="rows"
-              :columns="columns"
-              :loading="loading"
-              row-key="id" 
-              @row-click="onRowClick"
-            />
-          </div>
+          <q-tabs>
+            <q-tab name="books" @click="tabName = 'books'" label="Books"/>
+            <q-tab name="authors" @click="tabName = 'authors'" label="Authors"/>
+          </q-tabs>
+          <q-separator />
+
+          <q-tab-panels v-model="tabName" animated class="bg-transparent">
+            <q-tab-panel name="books">
+              <div class="q-pa-md">
+                  <q-table
+                    class="my-sticky-header-table"
+                    flat bordered
+                    title="Library Records"
+                    :rows="bookRows"
+                    :columns="bookCol"
+                    :loading="loading"
+                    row-key="id" 
+                    @row-click="onBooksRowClick"
+                  />
+              </div>
+            </q-tab-panel>
+              <q-tab-panel name="authors" class="q-gutter-y-md q-pa-lg">
+                <div class="q-pa-md">
+                  <q-table
+                    class="my-sticky-header-table"
+                    flat bordered
+                    title="Library Records"
+                    :rows="authRows"
+                    :columns="authCol"
+                    :loading="loading"
+                    row-key="id" 
+                    @row-click="onAuthorRowClick"
+                  />
+                </div>
+              </q-tab-panel>
+          </q-tab-panels>
         </q-card>
       </div>
     </div>

@@ -35,7 +35,7 @@
 </script>
 
 <template>
-  <q-page class="row items-center justify-evenly pt-10">
+  <q-page class="column items-center justify-start pt-10 q-gutter-y-lg">
     <div class="q-pa-md">
       <div class="q-gutter-md">
         <q-carousel
